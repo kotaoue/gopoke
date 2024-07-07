@@ -4,10 +4,6 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"os"
-	"path/filepath"
-	"strconv"
 )
 
 type PokemonListResponse struct {
@@ -23,12 +19,7 @@ type PokemonListItem struct {
 }
 
 func FetchAllPokemonAndSaveToFile(filename string) error {
-	dir := filepath.Dir(filename)
-	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return err
-	}
-
-	f, err := os.Create(filename)
+	f, err := dirAndFileCreate(filename)
 	if err != nil {
 		return err
 	}
@@ -45,8 +36,7 @@ func FetchAllPokemonAndSaveToFile(filename string) error {
 	offset := 0
 
 	for {
-		url := fmt.Sprintf("%s/pokemon?limit=%d&offset=%d", baseURL, limit, offset)
-		resp, err := http.Get(url)
+		resp, err := pokemonAPI(limit, offset)
 		if err != nil {
 			return err
 		}
@@ -85,16 +75,4 @@ func FetchAllPokemonAndSaveToFile(filename string) error {
 	}
 
 	return nil
-}
-
-func pokemonURLToID(url string) string {
-	// URLの最後のスラッシュの前にある数字をIDとして抽出
-	for i := len(url) - 2; i >= 0; i-- {
-		if url[i] == '/' {
-			idStr := url[i+1 : len(url)-1]
-			id, _ := strconv.Atoi(idStr)
-			return strconv.Itoa(id)
-		}
-	}
-	return ""
 }

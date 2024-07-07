@@ -7,5 +7,3 @@ type Pokemon struct {
 	Height         int    `json:"height"`
 	Weight         int    `json:"weight"`
 }
-
-const baseURL = "https://pokeapi.co/api/v2"
