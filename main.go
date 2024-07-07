@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 )
 
@@ -45,7 +46,7 @@ func Main() error {
 
 	if *init {
 		fmt.Println("initialize the pokedex")
-		if err := fetchAllPokemonAndSaveToFile("index.csv"); err != nil {
+		if err := fetchAllPokemonAndSaveToFile("pokedex/index.csv"); err != nil {
 			return err
 		}
 	}
@@ -53,6 +54,11 @@ func Main() error {
 }
 
 func fetchAllPokemonAndSaveToFile(filename string) error {
+	dir := filepath.Dir(filename)
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return err
+	}
+
 	f, err := os.Create(filename)
 	if err != nil {
 		return err
