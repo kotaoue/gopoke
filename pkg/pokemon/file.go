@@ -6,7 +6,8 @@ import (
 )
 
 const (
-	indexFile = "pokedex/index.csv"
+	indexFile  = "pokedex/index.csv"
+	detailFile = "pokedex/details.csv"
 )
 
 func dirAndFileCreate(name string) (*os.File, error) {

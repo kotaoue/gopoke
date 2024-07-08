@@ -18,9 +18,11 @@ func Main() error {
 	init := flag.Bool("init", false, "initialize the pokedex")
 	flag.Parse()
 
+	// pokemon.InitializeDetails(1)
+
 	if *init {
 		fmt.Println("initialize the pokedex")
-		if err := pokemon.FetchAllPokemonAndSaveToFile(); err != nil {
+		if err := pokemon.InitializeIndex(); err != nil {
 			return err
 		}
 	}

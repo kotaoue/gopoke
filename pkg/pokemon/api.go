@@ -8,12 +8,17 @@ import (
 
 const baseURL = "https://pokeapi.co/api/v2"
 
-func pokemonAPI(limit, offset int) (*http.Response, error) {
+func fetchPokemons(limit, offset int) (*http.Response, error) {
 	url := fmt.Sprintf("%s/pokemon?limit=%d&offset=%d", baseURL, limit, offset)
 	return http.Get(url)
 }
 
-func pokemonURLToID(url string) string {
+func fetchPokemonByID(id int) (*http.Response, error) {
+	url := fmt.Sprintf("%s/pokemon/%d/", baseURL, id)
+	return http.Get(url)
+}
+
+func urlToID(url string) string {
 	// URLの最後のスラッシュの前にある数字をIDとして抽出
 	for i := len(url) - 2; i >= 0; i-- {
 		if url[i] == '/' {

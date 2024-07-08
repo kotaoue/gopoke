@@ -18,7 +18,7 @@ type PokemonListItem struct {
 	URL  string `json:"url"`
 }
 
-func FetchAllPokemonAndSaveToFile() error {
+func InitializeIndex() error {
 	f, err := dirAndFileCreate(indexFile)
 	if err != nil {
 		return err
@@ -36,7 +36,7 @@ func FetchAllPokemonAndSaveToFile() error {
 	offset := 0
 
 	for {
-		resp, err := pokemonAPI(limit, offset)
+		resp, err := fetchPokemons(limit, offset)
 		if err != nil {
 			return err
 		}
@@ -56,7 +56,7 @@ func FetchAllPokemonAndSaveToFile() error {
 
 		for _, pokemon := range result.Results {
 			record := []string{
-				pokemonURLToID(pokemon.URL),
+				urlToID(pokemon.URL),
 				pokemon.Name,
 				pokemon.URL,
 			}
