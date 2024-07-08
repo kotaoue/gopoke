@@ -20,7 +20,7 @@ func Main() error {
 
 	if *init {
 		fmt.Println("initialize the pokedex")
-		if err := pokemon.FetchAllPokemonAndSaveToFile("pokedex/index.csv"); err != nil {
+		if err := pokemon.FetchAllPokemonAndSaveToFile(); err != nil {
 			return err
 		}
 	}

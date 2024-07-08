@@ -18,8 +18,8 @@ type PokemonListItem struct {
 	URL  string `json:"url"`
 }
 
-func FetchAllPokemonAndSaveToFile(filename string) error {
-	f, err := dirAndFileCreate(filename)
+func FetchAllPokemonAndSaveToFile() error {
+	f, err := dirAndFileCreate(indexFile)
 	if err != nil {
 		return err
 	}
