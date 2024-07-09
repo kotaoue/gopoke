@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kotaoue/gopoke/pkg/pokemon"
+	"github.com/kotaoue/gopoke/pkg/pokedex"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func Main() error {
 
 	if *init {
 		fmt.Println("initialize the pokedex")
-		if err := pokemon.InitializePokedex(); err != nil {
+		if err := pokedex.Initialize(); err != nil {
 			return err
 		}
 	}

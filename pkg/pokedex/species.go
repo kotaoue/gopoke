@@ -1,4 +1,4 @@
-package pokemon
+package pokedex
 
 import "encoding/json"
 

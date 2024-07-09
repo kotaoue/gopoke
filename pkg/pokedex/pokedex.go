@@ -1,4 +1,4 @@
-package pokemon
+package pokedex
 
 import (
 	"database/sql"
@@ -16,7 +16,7 @@ const (
 	pokedexDB  = "pokedex/pokedex.db"
 )
 
-func InitializePokedex() error {
+func Initialize() error {
 	if _, err := os.Stat(pokedexCSV); err == nil {
 		fmt.Printf("%s already exists. Skipping creation.\n", pokedexCSV)
 	} else if !os.IsNotExist(err) {
