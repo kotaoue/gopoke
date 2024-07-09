@@ -2,6 +2,7 @@ package pokemon
 
 import (
 	"encoding/csv"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -33,21 +34,20 @@ func InitializePokedex() error {
 		for _, result := range ps.Results {
 			id := urlToID(result.URL)
 
-			if id != 0 {
-				pokemon, err := fetchPokemonByID(id)
-				if err != nil {
-					return err
-				}
+			log.Printf("Saving Pokemon ID: %d name: %s\n", id, result.Name)
 
-				log.Printf("%+v\n", *pokemon)
-				if err := w.Write(pokemon.toCSV()); err != nil {
-					return err
-				}
+			// IDs 10000 and above are special forms and do not have Japanese names
+			if id == 0 || id >= 10000 {
+				continue
 			}
 
-			// Break if the value is 10,000 or above, as it represents a special form.
-			if id >= 10000 {
-				break
+			pokemon, err := fetchPokemonByID(id)
+			if err != nil {
+				return fmt.Errorf("failed to fetch pokemon by id: %w", err)
+			}
+
+			if err := w.Write(pokemon.toCSV()); err != nil {
+				return fmt.Errorf("failed to write csv: %w", err)
 			}
 		}
 

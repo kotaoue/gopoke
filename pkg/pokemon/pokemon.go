@@ -26,8 +26,8 @@ func (p *Pokemon) toCSV() []string {
 	return []string{
 		fmt.Sprintf("%d", p.ID),
 		p.Name,
-		fmt.Sprintf("%f", p.Height),
-		fmt.Sprintf("%f", p.Weight),
+		fmt.Sprintf("%.1f", p.Height),
+		fmt.Sprintf("%.1f", p.Weight),
 	}
 }
 
