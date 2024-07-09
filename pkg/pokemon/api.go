@@ -18,6 +18,11 @@ func fetchPokemonByID(id int) (*http.Response, error) {
 	return http.Get(url)
 }
 
+func fetchSpeciesByID(id int) (*http.Response, error) {
+	url := fmt.Sprintf("%s/pokemon-species/%d/", baseURL, id)
+	return http.Get(url)
+}
+
 func urlToID(url string) string {
 	// URLの最後のスラッシュの前にある数字をIDとして抽出
 	for i := len(url) - 2; i >= 0; i-- {

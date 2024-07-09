@@ -18,7 +18,7 @@ func Main() error {
 	init := flag.Bool("init", false, "initialize the pokedex")
 	flag.Parse()
 
-	// pokemon.InitializeDetails(1)
+	pokemon.InitializeDetails(1)
 
 	if *init {
 		fmt.Println("initialize the pokedex")

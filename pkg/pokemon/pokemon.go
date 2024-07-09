@@ -15,6 +15,22 @@ type Pokemon struct {
 	Weight int    `json:"weight"`
 }
 
+type NamedAPIResource struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
+type Name struct {
+	Name     string           `json:"name"`
+	Language NamedAPIResource `json:"language"`
+}
+
+type PokemonSpecies struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Names []Name `json:"names"`
+}
+
 func FetchPokemonByID(id int) (*Pokemon, error) {
 	resp, err := fetchPokemonByID(id)
 	if err != nil {
@@ -76,5 +92,37 @@ func InitializeDetails(id int) error {
 		return err
 	}
 
+	species, err := getPokemonSpecies(id)
+	if err != nil {
+		return err
+	}
+
+	japaneseName := getJapaneseName(species)
+	fmt.Printf("Japanese name for Pokémon with ID %d: %s\n", id, japaneseName)
+
 	return nil
+}
+
+func getPokemonSpecies(id int) (*PokemonSpecies, error) {
+	resp, err := fetchSpeciesByID(id)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var species PokemonSpecies
+	if err := json.NewDecoder(resp.Body).Decode(&species); err != nil {
+		return nil, err
+	}
+
+	return &species, nil
+}
+
+func getJapaneseName(species *PokemonSpecies) string {
+	for _, name := range species.Names {
+		if name.Language.Name == "ja" {
+			return name.Name
+		}
+	}
+	return ""
 }
