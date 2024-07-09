@@ -9,8 +9,8 @@ import (
 type Pokemon struct {
 	ID     int
 	Name   string
-	Height int
-	Weight int
+	Height float64
+	Weight float64
 }
 
 func (p Pokemon) toHeader() []string {
@@ -26,8 +26,8 @@ func (p *Pokemon) toCSV() []string {
 	return []string{
 		fmt.Sprintf("%d", p.ID),
 		p.Name,
-		fmt.Sprintf("%d", p.Height),
-		fmt.Sprintf("%d", p.Weight),
+		fmt.Sprintf("%f", p.Height),
+		fmt.Sprintf("%f", p.Weight),
 	}
 }
 
@@ -52,8 +52,8 @@ func fetchPokemonByID(id int) (*Pokemon, error) {
 	return &Pokemon{
 		ID:     pd.ID,
 		Name:   name,
-		Height: pd.Height,
-		Weight: pd.Weight,
+		Height: float64(pd.Height) * 10.0, // convert to cm
+		Weight: float64(pd.Weight) / 10.0, // convert to kg
 	}, nil
 }
 

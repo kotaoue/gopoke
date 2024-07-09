@@ -2,7 +2,7 @@ package pokemon
 
 import (
 	"encoding/csv"
-	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -25,12 +25,12 @@ func InitializePokedex() error {
 	offset := 0
 
 	for {
-		pokemons, err := fetchPokemonList(limit, offset)
+		ps, err := fetchPokemonList(limit, offset)
 		if err != nil {
 			return err
 		}
 
-		for _, result := range pokemons.Results {
+		for _, result := range ps.Results {
 			id := urlToID(result.URL)
 
 			if id != 0 {
@@ -39,18 +39,23 @@ func InitializePokedex() error {
 					return err
 				}
 
-				fmt.Printf("%+v\n", *pokemon)
+				log.Printf("%+v\n", *pokemon)
 				if err := w.Write(pokemon.toCSV()); err != nil {
 					return err
 				}
 			}
+
+			// Break if the value is 10,000 or above, as it represents a special form.
+			if id >= 10000 {
+				break
+			}
 		}
 
-		// 次のページがある場合、オフセットを更新して次のリクエストの準備
-		if pokemons.Next != "" {
+		// Update the offset to prepare for the next request if there has a next page.
+		if ps.Next != "" {
 			offset += limit
 		} else {
-			break // 次のページがない場合は終了
+			break
 		}
 	}
 
