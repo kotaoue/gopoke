@@ -6,14 +6,14 @@ import (
 	"fmt"
 )
 
-type PokemonListResponse struct {
+type pokemonListResponse struct {
 	Count    int             `json:"count"`
 	Next     string          `json:"next"`
 	Previous string          `json:"previous"`
-	Results  []PokemonDetail `json:"results"`
+	Results  []pokemonDetail `json:"results"`
 }
 
-type PokemonListItem struct {
+type pokemonListItem struct {
 	Name string `json:"name"`
 	URL  string `json:"url"`
 }
@@ -47,7 +47,7 @@ func InitializeIndex() error {
 			Count    int               `json:"count"`
 			Next     string            `json:"next"`
 			Previous string            `json:"previous"`
-			Results  []PokemonListItem `json:"results"`
+			Results  []pokemonListItem `json:"results"`
 		}
 
 		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {

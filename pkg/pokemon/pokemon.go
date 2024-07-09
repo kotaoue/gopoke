@@ -8,30 +8,30 @@ import (
 	"strconv"
 )
 
-type PokemonDetail struct {
+type pokemonDetail struct {
 	ID     int    `json:"id"`
 	Name   string `json:"name"`
 	Height int    `json:"height"`
 	Weight int    `json:"weight"`
 }
 
-type NamedAPIResource struct {
+type namedAPIResource struct {
 	Name string `json:"name"`
 	URL  string `json:"url"`
 }
 
-type Name struct {
+type name struct {
 	Name     string           `json:"name"`
-	Language NamedAPIResource `json:"language"`
+	Language namedAPIResource `json:"language"`
 }
 
-type PokemonSpecies struct {
+type pokemonSpecies struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`
-	Names []Name `json:"names"`
+	Names []name `json:"names"`
 }
 
-func FetchPokemonByID(id int) (*PokemonDetail, error) {
+func FetchPokemonByID(id int) (*pokemonDetail, error) {
 	resp, err := fetchPokemonByID(id)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func FetchPokemonByID(id int) (*PokemonDetail, error) {
 		return nil, fmt.Errorf("failed to fetch data: %s", resp.Status)
 	}
 
-	var pokemon PokemonDetail
+	var pokemon pokemonDetail
 	if err := json.NewDecoder(resp.Body).Decode(&pokemon); err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func InitializeDetails(id int) error {
 		return fmt.Errorf("failed to fetch data: %s", resp.Status)
 	}
 
-	var pokemon PokemonDetail
+	var pokemon pokemonDetail
 	if err := json.NewDecoder(resp.Body).Decode(&pokemon); err != nil {
 		return err
 	}
@@ -103,14 +103,14 @@ func InitializeDetails(id int) error {
 	return nil
 }
 
-func getPokemonSpecies(id int) (*PokemonSpecies, error) {
+func getPokemonSpecies(id int) (*pokemonSpecies, error) {
 	resp, err := fetchSpeciesByID(id)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	var species PokemonSpecies
+	var species pokemonSpecies
 	if err := json.NewDecoder(resp.Body).Decode(&species); err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func getPokemonSpecies(id int) (*PokemonSpecies, error) {
 	return &species, nil
 }
 
-func getJapaneseName(species *PokemonSpecies) string {
+func getJapaneseName(species *pokemonSpecies) string {
 	for _, name := range species.Names {
 		if name.Language.Name == "ja" {
 			return name.Name
