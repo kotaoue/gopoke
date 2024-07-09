@@ -23,3 +23,4 @@ go.work.sum
 
 # Ignore Assets
 pokedex.csv
+pokedex.db
