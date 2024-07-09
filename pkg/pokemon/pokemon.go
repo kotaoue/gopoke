@@ -8,6 +8,13 @@ import (
 	"strconv"
 )
 
+type Pokemon struct {
+	ID     int
+	Name   string
+	Height int
+	Weight int
+}
+
 type pokemonDetail struct {
 	ID     int    `json:"id"`
 	Name   string `json:"name"`
@@ -15,23 +22,26 @@ type pokemonDetail struct {
 	Weight int    `json:"weight"`
 }
 
-type namedAPIResource struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
+func FetchPokemonByID(id int) (*Pokemon, error) {
+	pd, err := fetchPokemonDetailByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	name, err := fetchPokemonJapaneseNameByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Pokemon{
+		ID:     pd.ID,
+		Name:   name,
+		Height: pd.Height,
+		Weight: pd.Weight,
+	}, nil
 }
 
-type name struct {
-	Name     string           `json:"name"`
-	Language namedAPIResource `json:"language"`
-}
-
-type pokemonSpecies struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Names []name `json:"names"`
-}
-
-func FetchPokemonByID(id int) (*pokemonDetail, error) {
+func fetchPokemonDetailByID(id int) (*pokemonDetail, error) {
 	resp, err := fetchPokemonByID(id)
 	if err != nil {
 		return nil, err
@@ -42,13 +52,12 @@ func FetchPokemonByID(id int) (*pokemonDetail, error) {
 		return nil, fmt.Errorf("failed to fetch data: %s", resp.Status)
 	}
 
-	var pokemon pokemonDetail
-	if err := json.NewDecoder(resp.Body).Decode(&pokemon); err != nil {
+	var pd pokemonDetail
+	if err := json.NewDecoder(resp.Body).Decode(&pd); err != nil {
 		return nil, err
 	}
 
-	fmt.Printf("%+v\n", pokemon)
-	return &pokemon, nil
+	return &pd, nil
 }
 
 func InitializeDetails(id int) error {
@@ -92,37 +101,5 @@ func InitializeDetails(id int) error {
 		return err
 	}
 
-	species, err := getPokemonSpecies(id)
-	if err != nil {
-		return err
-	}
-
-	japaneseName := getJapaneseName(species)
-	fmt.Printf("Japanese name for Pokémon with ID %d: %s\n", id, japaneseName)
-
 	return nil
-}
-
-func getPokemonSpecies(id int) (*pokemonSpecies, error) {
-	resp, err := fetchSpeciesByID(id)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var species pokemonSpecies
-	if err := json.NewDecoder(resp.Body).Decode(&species); err != nil {
-		return nil, err
-	}
-
-	return &species, nil
-}
-
-func getJapaneseName(species *pokemonSpecies) string {
-	for _, name := range species.Names {
-		if name.Language.Name == "ja" {
-			return name.Name
-		}
-	}
-	return ""
 }
