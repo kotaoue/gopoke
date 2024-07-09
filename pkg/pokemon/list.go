@@ -7,10 +7,10 @@ import (
 )
 
 type PokemonListResponse struct {
-	Count    int       `json:"count"`
-	Next     string    `json:"next"`
-	Previous string    `json:"previous"`
-	Results  []Pokemon `json:"results"`
+	Count    int             `json:"count"`
+	Next     string          `json:"next"`
+	Previous string          `json:"previous"`
+	Results  []PokemonDetail `json:"results"`
 }
 
 type PokemonListItem struct {

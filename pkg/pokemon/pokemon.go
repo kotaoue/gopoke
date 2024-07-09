@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-type Pokemon struct {
+type PokemonDetail struct {
 	ID     int    `json:"id"`
 	Name   string `json:"name"`
 	Height int    `json:"height"`
@@ -31,7 +31,7 @@ type PokemonSpecies struct {
 	Names []Name `json:"names"`
 }
 
-func FetchPokemonByID(id int) (*Pokemon, error) {
+func FetchPokemonByID(id int) (*PokemonDetail, error) {
 	resp, err := fetchPokemonByID(id)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func FetchPokemonByID(id int) (*Pokemon, error) {
 		return nil, fmt.Errorf("failed to fetch data: %s", resp.Status)
 	}
 
-	var pokemon Pokemon
+	var pokemon PokemonDetail
 	if err := json.NewDecoder(resp.Body).Decode(&pokemon); err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func InitializeDetails(id int) error {
 		return fmt.Errorf("failed to fetch data: %s", resp.Status)
 	}
 
-	var pokemon Pokemon
+	var pokemon PokemonDetail
 	if err := json.NewDecoder(resp.Body).Decode(&pokemon); err != nil {
 		return err
 	}
