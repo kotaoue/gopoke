@@ -22,5 +22,4 @@ go.work
 go.work.sum
 
 # Ignore Assets
-index.csv
-details.csv
+pokedex.csv

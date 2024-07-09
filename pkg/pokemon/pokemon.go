@@ -1,11 +1,9 @@
 package pokemon
 
 import (
-	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 )
 
 type Pokemon struct {
@@ -15,6 +13,24 @@ type Pokemon struct {
 	Weight int
 }
 
+func (p Pokemon) toHeader() []string {
+	return []string{
+		"ID",
+		"Name",
+		"Height",
+		"Weight",
+	}
+}
+
+func (p *Pokemon) toCSV() []string {
+	return []string{
+		fmt.Sprintf("%d", p.ID),
+		p.Name,
+		fmt.Sprintf("%d", p.Height),
+		fmt.Sprintf("%d", p.Weight),
+	}
+}
+
 type pokemonDetail struct {
 	ID     int    `json:"id"`
 	Name   string `json:"name"`
@@ -22,7 +38,7 @@ type pokemonDetail struct {
 	Weight int    `json:"weight"`
 }
 
-func FetchPokemonByID(id int) (*Pokemon, error) {
+func fetchPokemonByID(id int) (*Pokemon, error) {
 	pd, err := fetchPokemonDetailByID(id)
 	if err != nil {
 		return nil, err
@@ -42,7 +58,7 @@ func FetchPokemonByID(id int) (*Pokemon, error) {
 }
 
 func fetchPokemonDetailByID(id int) (*pokemonDetail, error) {
-	resp, err := fetchPokemonByID(id)
+	resp, err := pokemonAPI(id)
 	if err != nil {
 		return nil, err
 	}
@@ -58,48 +74,4 @@ func fetchPokemonDetailByID(id int) (*pokemonDetail, error) {
 	}
 
 	return &pd, nil
-}
-
-func InitializeDetails(id int) error {
-	f, err := dirAndFileCreate(detailFile)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	w := csv.NewWriter(f)
-	defer w.Flush()
-
-	if err := w.Write([]string{"id", "name", "weight", "height"}); err != nil {
-		return err
-	}
-
-	// id分だけループする
-	resp, err := fetchPokemonByID(id)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to fetch data: %s", resp.Status)
-	}
-
-	var pokemon pokemonDetail
-	if err := json.NewDecoder(resp.Body).Decode(&pokemon); err != nil {
-		return err
-	}
-
-	fmt.Printf("%+v\n", pokemon)
-	record := []string{
-		strconv.Itoa(pokemon.ID),
-		pokemon.Name,
-		strconv.Itoa(pokemon.Height),
-		strconv.Itoa(pokemon.Weight),
-	}
-	if err := w.Write(record); err != nil {
-		return err
-	}
-
-	return nil
 }
