@@ -8,8 +8,26 @@ import (
 	"path/filepath"
 )
 
+const (
+	pokedexCSV = "pokedex/pokedex.csv"
+)
+
 func InitializePokedex() error {
-	f, err := dirAndFileCreate("pokedex/pokedex.csv")
+	if _, err := os.Stat(pokedexCSV); err == nil {
+		fmt.Printf("%s already exists. Skipping creation\n", pokedexCSV)
+	} else if !os.IsNotExist(err) {
+		return err
+	} else {
+		if err := createPokedexCSV(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func createPokedexCSV() error {
+	f, err := dirAndFileCreate(pokedexCSV)
 	if err != nil {
 		return err
 	}
