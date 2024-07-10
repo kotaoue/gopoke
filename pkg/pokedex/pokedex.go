@@ -3,6 +3,7 @@ package pokedex
 import (
 	"database/sql"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -16,6 +17,12 @@ const (
 	pokedexDB  = "pokedex/pokedex.db"
 )
 
+type SearchCondition struct {
+	Height float64
+	Weight float64
+	Limit  int
+}
+
 func Initialize() error {
 	if _, err := os.Stat(pokedexCSV); err == nil {
 		fmt.Printf("%s already exists. Skipping creation.\n", pokedexCSV)
@@ -27,7 +34,7 @@ func Initialize() error {
 		}
 	}
 
-	db, err := sql.Open("sqlite3", pokedexDB)
+	db, err := OpenDB()
 	if err != nil {
 		return err
 	}
@@ -111,6 +118,10 @@ func createPokedexCSV() error {
 	}
 
 	return nil
+}
+
+func OpenDB() (*sql.DB, error) {
+	return sql.Open("sqlite3", pokedexDB)
 }
 
 func dirAndFileCreate(name string) (*os.File, error) {
@@ -200,4 +211,56 @@ func countPokemons(db *sql.DB) (int, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+func SelectPokemons(db *sql.DB, search SearchCondition) ([]Pokemon, error) {
+	rows, err := selectQuery(db, search)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var pokemons []Pokemon
+	for rows.Next() {
+		var p Pokemon
+		if err := rows.Scan(&p.ID, &p.Name, &p.Height, &p.Weight); err != nil {
+			return nil, err
+		}
+		pokemons = append(pokemons, p)
+	}
+	return pokemons, nil
+}
+
+func selectQuery(db *sql.DB, sc SearchCondition) (*sql.Rows, error) {
+	if sc.Height >= 0 && sc.Weight >= 0 {
+		query := `
+		SELECT id, name, height, weight
+		FROM pokemons
+		ORDER BY (ABS(height - ?) + ABS(weight - ?)) / 2
+		LIMIT ?`
+
+		return db.Query(query, sc.Height, sc.Weight, sc.Limit)
+	}
+
+	if sc.Height >= 0 {
+		query := `
+		SELECT id, name, height, weight
+		FROM pokemons
+		ORDER BY ABS(height - ?), weight
+		LIMIT ?`
+
+		return db.Query(query, sc.Height, sc.Limit)
+	}
+
+	if sc.Weight >= 0 {
+		query := `
+		SELECT id, name, height, weight
+		FROM pokemons
+		ORDER BY ABS(weight - ?), height
+		LIMIT ?`
+
+		return db.Query(query, sc.Weight, sc.Limit)
+	}
+
+	return nil, errors.New("Please set a value greater than 0 for either weight or height")
 }
