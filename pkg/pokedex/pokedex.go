@@ -20,6 +20,7 @@ const (
 type SearchCondition struct {
 	Height float64
 	Weight float64
+	Name   string
 	Limit  int
 }
 
@@ -232,6 +233,17 @@ func SelectPokemons(db *sql.DB, search SearchCondition) ([]Pokemon, error) {
 }
 
 func selectQuery(db *sql.DB, sc SearchCondition) (*sql.Rows, error) {
+	if sc.Name != "" {
+		query := `
+		SELECT id, name, height, weight
+		FROM pokemons
+		WHERE name LIKE ?
+		ORDER BY name
+		LIMIT ?`
+
+		return db.Query(query, sc.Name, sc.Limit)
+	}
+
 	if sc.Height >= 0 && sc.Weight >= 0 {
 		query := `
 		SELECT id, name, height, weight

@@ -36,7 +36,7 @@ go run main.go --weight=80
 ```
 
 ```bash
-$ go run main.go --height=170 --weight=80
+go run main.go --height=170 --weight=80
 マルノーム 170.0cm 80.0kg
 バクフーン 170.0cm 79.5kg
 ゴルダック 170.0cm 76.6kg
@@ -47,6 +47,25 @@ $ go run main.go --height=170 --weight=80
 ゴーゴート 170.0cm 91.0kg
 ゾロアーク 160.0cm 81.1kg
 ヤドラン 160.0cm 78.5kg
+```
+
+```bash
+go run main.go --name "%ドン" --limit=30 
+ウオチルドン 200.0cm 175.0kg
+ウツドン 100.0cm 6.4kg
+カバルドン 200.0cm 300.0kg
+グラードン 350.0cm 950.0kg
+コライドン 250.0cm 303.0kg
+サイドン 190.0cm 120.0kg
+シビルドン 210.0cm 80.5kg
+ジュラルドン 180.0cm 40.0kg
+タンドン 30.0cm 12.0kg
+トリトドン 90.0cm 29.9kg
+ドサイドン 240.0cm 282.8kg
+パッチルドン 230.0cm 150.0kg
+ミライドン 350.0cm 240.0kg
+ヤドン 120.0cm 36.0kg
+リザードン 170.0cm 90.5kg
 ```
 
 ## Thanks

@@ -16,8 +16,9 @@ func main() {
 
 func Main() error {
 	init := flag.Bool("init", false, "initialize the pokedex")
-	height := flag.Float64("height", -1, "height of the pokemon")
-	weight := flag.Float64("weight", -1, "weight of the pokemon")
+	height := flag.Float64("height", -1, "The height of the Pokemon to search for. The unit is cm")
+	weight := flag.Float64("weight", -1, "The weight of the Pokemon to search for. The unit is kg")
+	name := flag.String("name", "", "The name of the Pokemon to search for. Uses the LIKE syntax")
 	limit := flag.Int("limit", 10, "limit of the pokemons")
 	flag.Parse()
 
@@ -36,6 +37,7 @@ func Main() error {
 	sc := pokedex.SearchCondition{
 		Height: *height,
 		Weight: *weight,
+		Name:   *name,
 		Limit:  *limit,
 	}
 	ps, err := pokedex.SelectPokemons(db, sc)
