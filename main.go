@@ -19,6 +19,7 @@ func Main() error {
 	height := flag.Float64("height", -1, "The height of the Pokemon to search for. The unit is cm")
 	weight := flag.Float64("weight", -1, "The weight of the Pokemon to search for. The unit is kg")
 	name := flag.String("name", "", "The name of the Pokemon to search for. Uses the LIKE syntax")
+	id := flag.Int("id", -1, "ID of the Pokémon whose details you want to display")
 	limit := flag.Int("limit", 10, "limit of the pokemons")
 	flag.Parse()
 
@@ -27,6 +28,10 @@ func Main() error {
 		if err := pokedex.Initialize(); err != nil {
 			return err
 		}
+	}
+
+	if *id != -1 {
+		return pokedex.PrintPokemonByID(*id)
 	}
 
 	db, err := pokedex.OpenDB()

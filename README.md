@@ -68,5 +68,17 @@ go run main.go --name "%ドン" --limit=30
 リザードン 170.0cm 90.5kg
 ```
 
+```bash
+go run main.go --id=25
+No.0025
+ピカチュウ
+分類: ねずみポケモン
+高さ: 40.0cm    重さ: 6.0kg
+
+尻尾を　立てて　まわりの　様子を
+探っていると　ときどき
+雷が　尻尾に　落ちてくる。
+```
+
 ## Thanks
 - [PokéAPI](https://pokeapi.co/)
