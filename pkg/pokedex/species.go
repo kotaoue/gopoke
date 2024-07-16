@@ -45,15 +45,6 @@ func fetchPokemonSpeciesByID(id int) (*pokemonSpecies, error) {
 	return &species, nil
 }
 
-func fetchPokemonJapaneseNameByID(id int) (string, error) {
-	ps, err := fetchPokemonSpeciesByID(id)
-	if err != nil {
-		return "", err
-	}
-
-	return getJapaneseName(ps), nil
-}
-
 func getJapaneseName(ps *pokemonSpecies) string {
 	for _, name := range ps.Names {
 		if name.Language.Name == "ja" {

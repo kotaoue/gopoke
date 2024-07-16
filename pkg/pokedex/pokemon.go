@@ -7,18 +7,22 @@ import (
 )
 
 type Pokemon struct {
-	ID     int
-	Name   string
-	Height float64
-	Weight float64
+	ID         int
+	Name       string
+	Genera     string
+	Height     float64
+	Weight     float64
+	FlavorText string
 }
 
 func (p Pokemon) toHeader() []string {
 	return []string{
 		"ID",
 		"Name",
+		"Genera",
 		"Height",
 		"Weight",
+		"FlavorText",
 	}
 }
 
@@ -26,8 +30,10 @@ func (p *Pokemon) toCSV() []string {
 	return []string{
 		fmt.Sprintf("%d", p.ID),
 		p.Name,
+		p.Genera,
 		fmt.Sprintf("%.1f", p.Height),
 		fmt.Sprintf("%.1f", p.Weight),
+		p.FlavorText,
 	}
 }
 
@@ -44,16 +50,18 @@ func fetchPokemonByID(id int) (*Pokemon, error) {
 		return nil, err
 	}
 
-	name, err := fetchPokemonJapaneseNameByID(id)
+	ps, err := fetchPokemonSpeciesByID(id)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Pokemon{
-		ID:     pd.ID,
-		Name:   name,
-		Height: float64(pd.Height) * 10.0, // convert to cm
-		Weight: float64(pd.Weight) / 10.0, // convert to kg
+		ID:         pd.ID,
+		Name:       getJapaneseName(ps),
+		Genera:     getJapaneseGenes(ps),
+		FlavorText: getJapaneseFlavorText(ps),
+		Height:     float64(pd.Height) * 10.0, // convert to cm
+		Weight:     float64(pd.Weight) / 10.0, // convert to kg
 	}, nil
 }
 

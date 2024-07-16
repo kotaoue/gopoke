@@ -25,9 +25,7 @@ func Main() error {
 
 	if *init {
 		fmt.Println("initialize the pokedex")
-		if err := pokedex.Initialize(); err != nil {
-			return err
-		}
+		return pokedex.Initialize()
 	}
 
 	if *id != -1 {

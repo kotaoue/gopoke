@@ -139,8 +139,10 @@ func createPokedexTable(db *sql.DB) error {
 	CREATE TABLE IF NOT EXISTS pokemons (
 		id INTEGER PRIMARY KEY,
 		name TEXT,
+		genera TEXT,
 		height REAL,
-		weight REAL
+		weight REAL,
+		flavor_text TEXT
 	);`
 	_, err := db.Exec(query)
 	return err
@@ -165,7 +167,7 @@ func importCSVToSQLite(db *sql.DB) error {
 		return err
 	}
 
-	stmt, err := tx.Prepare("INSERT INTO pokemons (id, name, height, weight) VALUES (?, ?, ?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO pokemons (id, name, genera, height, weight, flavor_text) VALUES (?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return err
 	}
@@ -177,12 +179,7 @@ func importCSVToSQLite(db *sql.DB) error {
 			break
 		}
 
-		id := record[0]
-		name := record[1]
-		height := record[2]
-		weight := record[3]
-
-		_, err = stmt.Exec(id, name, height, weight)
+		_, err = stmt.Exec(record[0], record[1], record[2], record[3], record[4], record[5])
 		if err != nil {
 			return err
 		}
