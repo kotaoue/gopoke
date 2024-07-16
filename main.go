@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
 	"log"
@@ -28,13 +29,13 @@ func Main() error {
 		return pokedex.Initialize()
 	}
 
-	if *id != -1 {
-		return pokedex.PrintPokemonByID(*id)
-	}
-
 	db, err := pokedex.OpenDB()
 	if err != nil {
 		return err
+	}
+
+	if *id != -1 {
+		return printPokemon(db, *id)
 	}
 
 	sc := pokedex.SearchCondition{
@@ -53,4 +54,13 @@ func Main() error {
 	}
 
 	return nil
+}
+
+func printPokemon(db *sql.DB, id int) error {
+	p, err := pokedex.SelectPokemon(db, id)
+	if err != nil {
+		return err
+	}
+
+	return pokedex.PrintPokemon(p)
 }

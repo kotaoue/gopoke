@@ -211,6 +211,27 @@ func countPokemons(db *sql.DB) (int, error) {
 	return count, nil
 }
 
+func SelectPokemon(db *sql.DB, id int) (Pokemon, error) {
+	query := `
+	SELECT id, name, genera, height, weight, flavor_text
+	FROM pokemons
+	WHERE id = ?`
+
+	rows, err := db.Query(query, id)
+	if err != nil {
+		return Pokemon{}, err
+	}
+
+	for rows.Next() {
+		var p Pokemon
+		if err := rows.Scan(&p.ID, &p.Name, &p.Genera, &p.Height, &p.Weight, &p.FlavorText); err != nil {
+			return Pokemon{}, err
+		}
+		return p, nil
+	}
+	return Pokemon{}, errors.New("pokemon not found")
+}
+
 func SelectPokemons(db *sql.DB, search SearchCondition) ([]Pokemon, error) {
 	rows, err := selectQuery(db, search)
 	if err != nil {

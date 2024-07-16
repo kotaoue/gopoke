@@ -84,23 +84,12 @@ func fetchPokemonDetailByID(id int) (*pokemonDetail, error) {
 	return &pd, nil
 }
 
-func PrintPokemonByID(id int) error {
-	p, err := fetchPokemonByID(id)
-	if err != nil {
-		return err
-	}
-
-	ps, err := fetchPokemonSpeciesByID(id)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("No.%04d\n", id)
-	fmt.Printf("%s\n", getJapaneseName(ps))
-	fmt.Printf("分類: %s\n", getJapaneseGenes(ps))
+func PrintPokemon(p Pokemon) error {
+	fmt.Printf("No.%04d\n", p.ID)
+	fmt.Printf("%s\n", p.Name)
+	fmt.Printf("分類: %s\n", p.Genera)
 	fmt.Printf("高さ: %.1fcm\t重さ: %.1fkg\n", p.Height, p.Weight)
 	fmt.Println()
-	fmt.Println(getJapaneseFlavorText(ps))
-
+	fmt.Println(p.FlavorText)
 	return nil
 }
