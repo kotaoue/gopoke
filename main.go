@@ -35,15 +35,29 @@ func Main() error {
 	}
 
 	if *id != -1 {
-		return printPokemon(db, *id)
+		return printPokemonByID(db, *id)
 	}
 
-	sc := pokedex.SearchCondition{
+	printPokemons(db, pokedex.SearchCondition{
 		Height: *height,
 		Weight: *weight,
 		Name:   *name,
 		Limit:  *limit,
+	})
+
+	return nil
+}
+
+func printPokemonByID(db *sql.DB, id int) error {
+	p, err := pokedex.SelectPokemon(db, id)
+	if err != nil {
+		return err
 	}
+
+	return pokedex.PrintPokemon(p)
+}
+
+func printPokemons(db *sql.DB, sc pokedex.SearchCondition) error {
 	ps, err := pokedex.SelectPokemons(db, sc)
 	if err != nil {
 		return err
@@ -54,13 +68,4 @@ func Main() error {
 	}
 
 	return nil
-}
-
-func printPokemon(db *sql.DB, id int) error {
-	p, err := pokedex.SelectPokemon(db, id)
-	if err != nil {
-		return err
-	}
-
-	return pokedex.PrintPokemon(p)
 }
