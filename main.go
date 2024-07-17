@@ -21,6 +21,7 @@ func Main() error {
 	weight := flag.Float64("weight", -1, "The weight of the Pokemon to search for. The unit is kg")
 	name := flag.String("name", "", "The name of the Pokemon to search for. Uses the LIKE syntax")
 	id := flag.Int("id", -1, "ID of the Pokémon whose details you want to display")
+	random := flag.Bool("random", false, "Randomly selects a Pokémon")
 	limit := flag.Int("limit", 10, "limit of the pokemons")
 	flag.Parse()
 
@@ -32,6 +33,10 @@ func Main() error {
 	db, err := pokedex.OpenDB()
 	if err != nil {
 		return err
+	}
+
+	if *random {
+		return printRandomPokemon(db)
 	}
 
 	if *id != -1 {
@@ -46,6 +51,15 @@ func Main() error {
 	})
 
 	return nil
+}
+
+func printRandomPokemon(db *sql.DB) error {
+	p, err := pokedex.RandomPokemon(db)
+	if err != nil {
+		return err
+	}
+
+	return pokedex.PrintPokemon(p)
 }
 
 func printPokemonByID(db *sql.DB, id int) error {
