@@ -1,12 +1,15 @@
 # gopoke
+
 My personal Pokédex
 
 ## Initialize
+
 ```bash
 go run main.go --init
 ```
 
 ## Usage
+
 ```bash
 go run main.go --height=170                       
 ウツボット 170.0cm 15.5kg
@@ -93,4 +96,5 @@ No.0302
 ```
 
 ## Thanks
+
 - [PokéAPI](https://pokeapi.co/)
