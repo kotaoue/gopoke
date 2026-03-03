@@ -1,36 +1,25 @@
 package pokedex
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/json"
 	"net/http"
-	"strconv"
 )
 
-const baseURL = "https://pokeapi.co/api/v2"
+const graphqlURL = "https://beta.pokeapi.co/graphql/v1beta2"
 
-func pokemonListAPI(limit, offset int) (*http.Response, error) {
-	url := fmt.Sprintf("%s/pokemon?limit=%d&offset=%d", baseURL, limit, offset)
-	return http.Get(url)
+type graphqlRequest struct {
+	Query     string                 `json:"query"`
+	Variables map[string]interface{} `json:"variables"`
 }
 
-func pokemonAPI(id int) (*http.Response, error) {
-	url := fmt.Sprintf("%s/pokemon/%d/", baseURL, id)
-	return http.Get(url)
-}
-
-func speciesAPI(id int) (*http.Response, error) {
-	url := fmt.Sprintf("%s/pokemon-species/%d/", baseURL, id)
-	return http.Get(url)
-}
-
-func urlToID(url string) int {
-	// URLの最後のスラッシュの前にある数字をIDとして抽出
-	for i := len(url) - 2; i >= 0; i-- {
-		if url[i] == '/' {
-			idStr := url[i+1 : len(url)-1]
-			id, _ := strconv.Atoi(idStr)
-			return id
-		}
+func graphqlAPI(query string, variables map[string]interface{}) (*http.Response, error) {
+	body, err := json.Marshal(graphqlRequest{
+		Query:     query,
+		Variables: variables,
+	})
+	if err != nil {
+		return nil, err
 	}
-	return 0
+	return http.Post(graphqlURL, "application/json", bytes.NewReader(body))
 }
