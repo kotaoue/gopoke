@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 const pokemonBatchQuery = `
@@ -18,16 +19,14 @@ query GetPokemonBatch($limit: Int!, $offset: Int!) {
     height
     weight
     pokemon_v2_pokemonspecy {
-      pokemon_v2_pokemonnames(where: {language_id: {_eq: 1}}) {
-        name
-      }
-      pokemon_v2_pokemongenera(where: {language_id: {_eq: 1}}) {
-        genus
-      }
-      pokemon_v2_pokemonflavortexts(where: {language_id: {_eq: 1}}, limit: 1) {
-        flavor_text
-      }
-    }
+		pokemon_v2_pokemonspeciesnames(where: {language_id: {_eq: 1}}) {
+        	name
+			genus
+		}
+		pokemon_v2_pokemonspeciesflavortexts(where: {language_id: {_eq: 1}}, limit: 1) {
+			flavor_text
+		}
+	}
   }
 }
 `
@@ -36,26 +35,27 @@ type graphqlResponse struct {
 	Data struct {
 		Pokemon []gqlPokemon `json:"pokemon_v2_pokemon"`
 	} `json:"data"`
+	Errors []gqlError `json:"errors"`
+}
+
+type gqlError struct {
+	Message string `json:"message"`
 }
 
 type gqlPokemon struct {
-	ID      int        `json:"id"`
-	Height  int        `json:"height"`
-	Weight  int        `json:"weight"`
+	ID      int         `json:"id"`
+	Height  int         `json:"height"`
+	Weight  int         `json:"weight"`
 	Species *gqlSpecies `json:"pokemon_v2_pokemonspecy"`
 }
 
 type gqlSpecies struct {
-	Names       []gqlName       `json:"pokemon_v2_pokemonnames"`
-	Genera      []gqlGenus      `json:"pokemon_v2_pokemongenera"`
-	FlavorTexts []gqlFlavorText `json:"pokemon_v2_pokemonflavortexts"`
+	Names       []gqlName       `json:"pokemon_v2_pokemonspeciesnames"`
+	FlavorTexts []gqlFlavorText `json:"pokemon_v2_pokemonspeciesflavortexts"`
 }
 
 type gqlName struct {
-	Name string `json:"name"`
-}
-
-type gqlGenus struct {
+	Name  string `json:"name"`
 	Genus string `json:"genus"`
 }
 
@@ -82,6 +82,19 @@ func fetchPokemonBatch(limit, offset int) ([]Pokemon, error) {
 		return nil, err
 	}
 
+	if len(result.Errors) > 0 {
+		messages := make([]string, 0, len(result.Errors))
+		for _, e := range result.Errors {
+			if e.Message != "" {
+				messages = append(messages, e.Message)
+			}
+		}
+		if len(messages) == 0 {
+			return nil, fmt.Errorf("graphql returned errors")
+		}
+		return nil, fmt.Errorf("graphql returned errors: %s", strings.Join(messages, "; "))
+	}
+
 	pokemons := make([]Pokemon, 0, len(result.Data.Pokemon))
 	for _, gp := range result.Data.Pokemon {
 		p := Pokemon{
@@ -92,9 +105,7 @@ func fetchPokemonBatch(limit, offset int) ([]Pokemon, error) {
 		if gp.Species != nil {
 			if len(gp.Species.Names) > 0 {
 				p.Name = gp.Species.Names[0].Name
-			}
-			if len(gp.Species.Genera) > 0 {
-				p.Genera = gp.Species.Genera[0].Genus
+				p.Genera = gp.Species.Names[0].Genus
 			}
 			if len(gp.Species.FlavorTexts) > 0 {
 				p.FlavorText = gp.Species.FlavorTexts[0].FlavorText
@@ -102,5 +113,10 @@ func fetchPokemonBatch(limit, offset int) ([]Pokemon, error) {
 		}
 		pokemons = append(pokemons, p)
 	}
+
+	if len(pokemons) == 0 && offset == 0 {
+		return nil, fmt.Errorf("pokemon batch is empty at offset=0")
+	}
+
 	return pokemons, nil
 }
