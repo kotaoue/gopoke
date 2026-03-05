@@ -1,5 +1,10 @@
 # gopoke
 
+[![Go](https://github.com/kotaoue/gopoke/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/kotaoue/gopoke/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/kotaoue/gopoke/branch/main/graph/badge.svg)](https://codecov.io/gh/kotaoue/gopoke)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kotaoue/gopoke)](https://goreportcard.com/report/github.com/kotaoue/gopoke)
+[![License](https://img.shields.io/github/license/kotaoue/gopoke)](https://github.com/kotaoue/gopoke/blob/main/LICENSE)
+
 My personal Pokédex
 
 ## Initialize
