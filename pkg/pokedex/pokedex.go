@@ -85,37 +85,22 @@ func createPokedexCSV() error {
 	offset := 0
 
 	for {
-		ps, err := fetchPokemonList(limit, offset)
+		pokemons, err := fetchPokemonBatch(limit, offset)
 		if err != nil {
 			return err
 		}
 
-		for _, result := range ps.Results {
-			id := urlToID(result.URL)
-
-			log.Printf("Saving Pokemon ID: %d name: %s\n", id, result.Name)
-
-			// IDs 10000 and above are special forms and do not have Japanese names
-			if id == 0 || id >= 10000 {
-				continue
-			}
-
-			pokemon, err := fetchPokemonByID(id)
-			if err != nil {
-				return fmt.Errorf("failed to fetch pokemon by id: %w", err)
-			}
-
-			if err := w.Write(pokemon.toCSV()); err != nil {
+		for _, p := range pokemons {
+			log.Printf("Saving Pokemon ID: %d name: %s\n", p.ID, p.Name)
+			if err := w.Write(p.toCSV()); err != nil {
 				return fmt.Errorf("failed to write csv: %w", err)
 			}
 		}
 
-		// Update the offset to prepare for the next request if there has a next page.
-		if ps.Next != "" {
-			offset += limit
-		} else {
+		if len(pokemons) < limit {
 			break
 		}
+		offset += limit
 	}
 
 	return nil

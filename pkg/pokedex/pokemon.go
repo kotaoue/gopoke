@@ -1,10 +1,6 @@
 package pokedex
 
-import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-)
+import "fmt"
 
 type Pokemon struct {
 	ID         int
@@ -35,53 +31,6 @@ func (p *Pokemon) toCSV() []string {
 		fmt.Sprintf("%.1f", p.Weight),
 		p.FlavorText,
 	}
-}
-
-type pokemonDetail struct {
-	ID     int    `json:"id"`
-	Name   string `json:"name"`
-	Height int    `json:"height"`
-	Weight int    `json:"weight"`
-}
-
-func fetchPokemonByID(id int) (*Pokemon, error) {
-	pd, err := fetchPokemonDetailByID(id)
-	if err != nil {
-		return nil, err
-	}
-
-	ps, err := fetchPokemonSpeciesByID(id)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Pokemon{
-		ID:         pd.ID,
-		Name:       getJapaneseName(ps),
-		Genera:     getJapaneseGenes(ps),
-		FlavorText: getJapaneseFlavorText(ps),
-		Height:     float64(pd.Height) * 10.0, // convert to cm
-		Weight:     float64(pd.Weight) / 10.0, // convert to kg
-	}, nil
-}
-
-func fetchPokemonDetailByID(id int) (*pokemonDetail, error) {
-	resp, err := pokemonAPI(id)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to fetch data: %s", resp.Status)
-	}
-
-	var pd pokemonDetail
-	if err := json.NewDecoder(resp.Body).Decode(&pd); err != nil {
-		return nil, err
-	}
-
-	return &pd, nil
 }
 
 func PrintPokemon(p Pokemon) error {
